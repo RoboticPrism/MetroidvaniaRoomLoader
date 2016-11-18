@@ -19,4 +19,16 @@ public class Door : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    // Get the door this door leads to
+    public Door GetDestinationDoor()
+    {
+        return destinationDoor;
+    }
+
+    // Get the room this door is in
+    public Room GetMyRoom()
+    {
+        return myRoom;
+    }
 }
