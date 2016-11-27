@@ -9,6 +9,9 @@ public class Room : MonoBehaviour {
 
     // This room's state
     public RoomState state;
+
+	// Is this room the current spawn room
+	public bool spawnRoom;
     
     // The doors in this room
     public List<Door> doors;
@@ -20,9 +23,18 @@ public class Room : MonoBehaviour {
     public List<OnetimeRoomObject> onetimeObjects;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
-	
+		// Search this room's children for it's doors
+		foreach (Transform child in this.transform) {
+			if (child.CompareTag(Tags.DOOR)) {
+				Door currentDoor = child.GetComponent<Door>();
+				// Set this door's parent room to this room, then add it to
+				// this room's list of doors
+				currentDoor.myRoom = this;
+				doors.Add(currentDoor);
+			}
+		}
 	}
 	
 	// Update is called once per frame
@@ -59,6 +71,16 @@ public class Room : MonoBehaviour {
     public void PrepareRoom ()
     {
         //TODO: Load respawning room objects and one time objects
+
+		foreach(RespawningRoomObject respawnObject in respawningObjects) {
+			respawnObject.Reset();
+		}
+
+		foreach(OnetimeRoomObject oneTimeObject in onetimeObjects) {
+			if(oneTimeObject.isAvailable) {
+				oneTimeObject.Reset();
+			}
+		}
     }
 
     // Clears out objects within a room

@@ -13,4 +13,9 @@ public class RespawningRoomObject : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	// Reset this object to it's original state
+	public void Reset() {
+		//TODO: put this object back where it belongs
+	}
 }
