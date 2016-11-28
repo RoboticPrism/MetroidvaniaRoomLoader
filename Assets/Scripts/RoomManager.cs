@@ -18,10 +18,46 @@ public class RoomManager : MonoBehaviour {
     private List<Room> adjacentRooms;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
-	
+		// Find all the rooms in the game
+		GameObject[] roomsInScene = GameObject.FindGameObjectsWithTag(Tags.ROOM);
+		foreach (GameObject room in roomsInScene) {
+			// Get the Room component from the object
+			Room roomComponent = room.GetComponent<Room>();
+
+			// Add the room to the list of all rooms, and check if it's the spawn room
+			// If spawn room, make it our initial current room
+			allRooms.Add(roomComponent);
+			if (roomComponent.spawnRoom) {
+				currentRoom = roomComponent;
+			}
+		}
+
+		// Needs at least one room in the game
+		if (allRooms.Count == 0) {
+			Debug.LogError("PLEASE PROVIDE AT LEAST ONE ROOM");
+			Application.Quit();
+		}
+			
+		// Initialize the player's starting room
+		// !IMPORTANT!
+		// Can't use SetCurrentRoom() here because we have no adjacent rooms yet
+		if (currentRoom != null) {
+			currentRoom.PrepareRoom();
+			currentRoom.ActivateRoom();
+			currentRoom.SetState(Room.RoomState.ACTIVE);
+			SetAdjacentRooms(currentRoom);
+		} else {
+			Debug.LogError("NO STARTING ROOM GIVEN");
+			Application.Quit();
+		}
+			
+		// Clean and deactivate all other rooms
+		CleanUpRooms();
 	}
+
+
 	
 	// Update is called once per frame
 	void Update ()
@@ -39,17 +75,28 @@ public class RoomManager : MonoBehaviour {
         }
         currentRoom = room;
         room.ActivateRoom();
-        // Get new adjacent rooms and prepare them
-        adjacentRooms = room.GetAdjacentRooms();
-        foreach (Room r in adjacentRooms)
-        {
-            if (r.GetState() != Room.RoomState.PREPARED)
-            {
-                r.PrepareRoom();
-                r.SetState(Room.RoomState.PREPARED);
-            }
-        }
+		room.SetState(Room.RoomState.ACTIVE);
+
+		// Get new adjacent rooms and prepare them
+		SetAdjacentRooms (room);
     }
+
+	// Prepare all rooms adjacent to the given room, and set them to the PREPARED state
+	public void SetAdjacentRooms(Room room)
+	{
+		// Get all rooms adjacent to the given room
+		adjacentRooms = room.GetAdjacentRooms();
+
+		// Prepare all adjacent Rooms r, to the given room
+		foreach (Room r in adjacentRooms)
+		{
+			if (r.GetState() != Room.RoomState.PREPARED)
+			{
+				r.PrepareRoom();
+				r.SetState(Room.RoomState.PREPARED);
+			}
+		}
+	}
 
     // Use after setting a new current room to clean up old rooms
     public void CleanUpRooms()
