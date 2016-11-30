@@ -81,8 +81,6 @@ public class RoomManager : MonoBehaviour {
 	{
 		// Get all rooms adjacent to the given room
 		adjacentRooms = room.GetAdjacentRooms();
-        Debug.Log(room.GetAdjacentRooms());
-        Debug.Log(adjacentRooms);
 
 		// Prepare all adjacent Rooms r, to the given room
 		foreach (Room r in adjacentRooms)
