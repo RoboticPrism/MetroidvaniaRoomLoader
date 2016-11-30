@@ -12,13 +12,13 @@ public class RoomManager : MonoBehaviour {
     public List<Room> allRooms;
 
     // The room instance the player is currently in
-    private Room currentRoom;
+    public Room currentRoom;
 
     // The rooms adjacent to the current room that should be loaded
-    private List<Room> adjacentRooms;
+    public List<Room> adjacentRooms;
 
 	// Use this for initialization
-	void Awake ()
+	void Start ()
     {
 		// Find all the rooms in the game
 		GameObject[] roomsInScene = GameObject.FindGameObjectsWithTag(Tags.ROOM);
@@ -30,7 +30,7 @@ public class RoomManager : MonoBehaviour {
 			// If spawn room, make it our initial current room
 			allRooms.Add(roomComponent);
 			if (roomComponent.spawnRoom) {
-				currentRoom = roomComponent;
+				SetCurrentRoom(roomComponent);
 			}
 		}
 
@@ -43,12 +43,7 @@ public class RoomManager : MonoBehaviour {
 		// Initialize the player's starting room
 		// !IMPORTANT!
 		// Can't use SetCurrentRoom() here because we have no adjacent rooms yet
-		if (currentRoom != null) {
-			currentRoom.PrepareRoom();
-			currentRoom.ActivateRoom();
-			currentRoom.SetState(Room.RoomState.ACTIVE);
-			SetAdjacentRooms(currentRoom);
-		} else {
+		if (currentRoom == null) {
 			Debug.LogError("NO STARTING ROOM GIVEN");
 			Application.Quit();
 		}
@@ -86,6 +81,8 @@ public class RoomManager : MonoBehaviour {
 	{
 		// Get all rooms adjacent to the given room
 		adjacentRooms = room.GetAdjacentRooms();
+        Debug.Log(room.GetAdjacentRooms());
+        Debug.Log(adjacentRooms);
 
 		// Prepare all adjacent Rooms r, to the given room
 		foreach (Room r in adjacentRooms)
