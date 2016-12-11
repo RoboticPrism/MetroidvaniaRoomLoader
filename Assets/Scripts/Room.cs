@@ -17,23 +17,26 @@ public class Room : MonoBehaviour {
     public List<Door> doors;
 
     // Respawning objects in this room
-    public List<RespawningRoomObject> respawningObjects;
-
-    // Onetime objects in this room
-    public List<OnetimeRoomObject> onetimeObjects;
+    public List<RoomObject> roomObjects;
 
 	// Use this for initialization
 	void Awake ()
     {
-		// Search this room's children for it's doors
-		foreach (Transform child in this.transform) {
-			if (child.CompareTag(Tags.DOOR)) {
+		// Search this room's children for it's doors and objects
+		foreach (Transform child in GetComponentInChildren<Transform>())
+        {
+			if (child.GetComponent<Door>() != null)
+            {
 				Door currentDoor = child.GetComponent<Door>();
 				// Set this door's parent room to this room, then add it to
 				// this room's list of doors
 				currentDoor.myRoom = this;
 				doors.Add(currentDoor);
 			}
+            if (child.GetComponent<RoomObject>() != null)
+            {
+                roomObjects.Add(child.GetComponent<RoomObject>());
+            }
 		}
 	}
 	
@@ -70,23 +73,19 @@ public class Room : MonoBehaviour {
     // Prepares objects within a room
     public void PrepareRoom ()
     {
-        //TODO: Load respawning room objects and one time objects
-
-		foreach(RespawningRoomObject respawnObject in respawningObjects) {
-			respawnObject.Reset();
-		}
-
-		foreach(OnetimeRoomObject oneTimeObject in onetimeObjects) {
-			if(oneTimeObject.isAvailable) {
-				oneTimeObject.Reset();
-			}
+		foreach(RoomObject respawnObject in roomObjects) {
+			respawnObject.Prepare();
 		}
     }
 
     // Clears out objects within a room
     public void ClearRoom()
     {
-        //TODO: Clear all non-permanent room objects
+        foreach (RoomObject respawnObject in roomObjects)
+        {
+            respawnObject.Clear();
+        }
+        // TODO: Destroy projectiles
     }
 
     // Returns all rooms adjacent to this one
