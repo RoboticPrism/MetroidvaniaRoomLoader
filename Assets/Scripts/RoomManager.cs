@@ -101,7 +101,7 @@ public class RoomManager : MonoBehaviour {
             // Don't prepare, just hide the room
             if (r.GetState() == Room.RoomState.ACTIVE)
             {
-                r.DeactivateRoom();
+                r.ClearRoom();
             }
             // Do nothing
             else if (r.GetState() == Room.RoomState.PREPARED)
