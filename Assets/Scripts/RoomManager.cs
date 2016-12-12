@@ -12,13 +12,13 @@ public class RoomManager : MonoBehaviour {
     public List<Room> allRooms;
 
     // The room instance the player is currently in
-    private Room currentRoom;
+    public Room currentRoom;
 
     // The rooms adjacent to the current room that should be loaded
-    private List<Room> adjacentRooms;
+    public List<Room> adjacentRooms;
 
 	// Use this for initialization
-	void Awake ()
+	void Start ()
     {
 		// Find all the rooms in the game
 		GameObject[] roomsInScene = GameObject.FindGameObjectsWithTag(Tags.ROOM);
@@ -30,7 +30,7 @@ public class RoomManager : MonoBehaviour {
 			// If spawn room, make it our initial current room
 			allRooms.Add(roomComponent);
 			if (roomComponent.spawnRoom) {
-				currentRoom = roomComponent;
+				SetCurrentRoom(roomComponent);
 			}
 		}
 
@@ -43,12 +43,7 @@ public class RoomManager : MonoBehaviour {
 		// Initialize the player's starting room
 		// !IMPORTANT!
 		// Can't use SetCurrentRoom() here because we have no adjacent rooms yet
-		if (currentRoom != null) {
-			currentRoom.PrepareRoom();
-			currentRoom.ActivateRoom();
-			currentRoom.SetState(Room.RoomState.ACTIVE);
-			SetAdjacentRooms(currentRoom);
-		} else {
+		if (currentRoom == null) {
 			Debug.LogError("NO STARTING ROOM GIVEN");
 			Application.Quit();
 		}
@@ -68,13 +63,26 @@ public class RoomManager : MonoBehaviour {
     // Sets a new current room, prepares adjacent room
     public void SetCurrentRoom(Room room)
     {
-        // Check if this room is not adjacent (prepared), prepare it
-        if (!adjacentRooms.Contains(room))
+        currentRoom = room;
+        
+        // Do nothing if active
+        if (room.GetState() == Room.RoomState.ACTIVE)
+        {
+
+        }
+        // If prepared, show
+        else if (room.GetState() == Room.RoomState.PREPARED)
+        {
+            room.ActivateRoom();
+        }
+        // If deactive, we need to prepare this room then show it
+        else if (room.GetState() == Room.RoomState.DEACTIVE)
         {
             room.PrepareRoom();
+            room.ActivateRoom();
         }
-        currentRoom = room;
-        room.ActivateRoom();
+
+        // Set state to active    
 		room.SetState(Room.RoomState.ACTIVE);
 
 		// Get new adjacent rooms and prepare them
@@ -90,12 +98,25 @@ public class RoomManager : MonoBehaviour {
 		// Prepare all adjacent Rooms r, to the given room
 		foreach (Room r in adjacentRooms)
 		{
-			if (r.GetState() != Room.RoomState.PREPARED)
+            // Don't prepare, just hide the room
+            if (r.GetState() == Room.RoomState.ACTIVE)
+            {
+                r.DeactivateRoom();
+            }
+            // Do nothing
+            else if (r.GetState() == Room.RoomState.PREPARED)
+            {
+
+            }
+            // Prepare
+            else if (r.GetState() == Room.RoomState.DEACTIVE)
 			{
 				r.PrepareRoom();
-				r.SetState(Room.RoomState.PREPARED);
 			}
-		}
+
+            // Set state to prepared
+            r.SetState(Room.RoomState.PREPARED);
+        }
 	}
 
     // Use after setting a new current room to clean up old rooms
