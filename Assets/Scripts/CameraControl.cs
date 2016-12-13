@@ -12,7 +12,9 @@ public class CameraControl : MonoBehaviour {
 	// Activate your position limitations for the Y axis by turning this on.
 
 	[Header("Camera Movement Boundaries")]
-	public bool limitCameraMovement = false;
+	public bool limitCameraMovement = true;
+	public bool limitCamXMovement = true;
+	public bool limitCamYMovement = true;
 	public float limitLeft;
 	public float limitRight;
 	public float limitBottom;
@@ -43,10 +45,13 @@ public class CameraControl : MonoBehaviour {
 		cameraPosition = new Vector3 (playerPosition.x, playerPosition.y, transform.position.z);
 
 		// Here we clamp the desired position into the area declared in the limit variables.
-		if(limitCameraMovement)
-		{
-			cameraPosition.y = Mathf.Clamp ( cameraPosition.y, limitBottom, limitTop );
-			cameraPosition.x = Mathf.Clamp ( cameraPosition.x, limitLeft, limitRight );
+		if (limitCameraMovement) {
+			cameraPosition.y = Mathf.Clamp (cameraPosition.y, limitBottom, limitTop);
+			cameraPosition.x = Mathf.Clamp (cameraPosition.x, limitLeft, limitRight);
+		} else if (limitCamXMovement) {
+			cameraPosition.x = Mathf.Clamp (cameraPosition.x, limitLeft, limitRight);
+		} else if (limitCamYMovement) {
+			cameraPosition.y = Mathf.Clamp (cameraPosition.y, limitBottom, limitTop);
 		}
 
 		// and now we're updating the camera position using what came of all the calculations above.
@@ -59,18 +64,28 @@ public class CameraControl : MonoBehaviour {
 	// Use this to change/activate level limits.
 	public void SetNewLimits (float leftLimit, float rightLimit, float bottomLimit, float topLimit )
 	{
-		Debug.Log ("whoa");
 		limitLeft = leftLimit;
 		limitRight = rightLimit;
 		limitBottom = bottomLimit;
 		limitTop = topLimit;
 
 		limitCameraMovement = true;
+		limitCamXMovement = true;
+		limitCamYMovement = true;
 	}
 
 	// No longer use limits.
 	public void DeactivateLimits ()
 	{
 		limitCameraMovement = false;
+	}
+
+	public void DeactivateXLimits()
+	{
+		limitCamXMovement = false;
+	}
+	public void DeactivateYLimits()
+	{
+		limitCamYMovement = false;
 	}
 }

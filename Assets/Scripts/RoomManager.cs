@@ -94,7 +94,6 @@ public class RoomManager : MonoBehaviour {
 
         // Set state to active    
 		room.SetState(Room.RoomState.ACTIVE);
-		room.SetLimits ();
 
 		// Get new adjacent rooms and prepare them
 		SetAdjacentRooms (room);

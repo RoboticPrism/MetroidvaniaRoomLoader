@@ -108,8 +108,9 @@ public class Room : MonoBehaviour {
 
 	public void SetLimits() {
 		CameraControl cc = Object.FindObjectOfType<CameraControl> ();
-
-		cc.SetNewLimits (minX, maxX, minY, maxY);
+		if (cc) {
+			cc.SetNewLimits (minX, maxX, minY, maxY);
+		}
 	}
 
 }
