@@ -20,6 +20,15 @@ public class RoomManager : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
+		Room[] getRooms = Object.FindObjectsOfType<Room> ();
+
+		foreach (Room r in getRooms) {
+			allRooms.Add(r);
+			if (r.spawnRoom) {
+				SetCurrentRoom(r);
+			}
+		}
+		/*
 		// Find all the rooms in the game
 		GameObject[] roomsInScene = GameObject.FindGameObjectsWithTag(Tags.ROOM);
 		foreach (GameObject room in roomsInScene) {
@@ -33,6 +42,7 @@ public class RoomManager : MonoBehaviour {
 				SetCurrentRoom(roomComponent);
 			}
 		}
+		*/
 
 		// Needs at least one room in the game
 		if (allRooms.Count == 0) {
@@ -84,6 +94,7 @@ public class RoomManager : MonoBehaviour {
 
         // Set state to active    
 		room.SetState(Room.RoomState.ACTIVE);
+		room.SetLimits ();
 
 		// Get new adjacent rooms and prepare them
 		SetAdjacentRooms (room);
