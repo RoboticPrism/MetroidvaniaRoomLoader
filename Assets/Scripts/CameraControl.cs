@@ -20,6 +20,10 @@ public class CameraControl : MonoBehaviour {
     public Vector2 roomSizeMin;
     public Vector2 roomSizeMax;
 
+    [Header("Camera Movement Speeds")]
+    public float cameraMoveSpeed = 0.1f;
+    public float cameraScaleSpeed = 0.02f;
+
     private Camera camera;
 
 
@@ -75,19 +79,19 @@ public class CameraControl : MonoBehaviour {
         }
 
         // Set camera size gradually
-        float scaleSpeed = 0.1f;
+        
         // If camera needs to be bigger, boost it up
         if (camera.orthographicSize < roomHeight / 2.0f)
         {
-            camera.orthographicSize += scaleSpeed;
+            camera.orthographicSize += cameraScaleSpeed;
         }
         // If camera needs to be smaller, scale it down
         else if (camera.orthographicSize > roomHeight / 2.0f)
         {
-            camera.orthographicSize -= scaleSpeed;
+            camera.orthographicSize -= cameraScaleSpeed;
         }
         // If the camera is close enough to the right size, jump it there
-        if (Mathf.Abs(camera.orthographicSize - (roomHeight / 2.0f)) < scaleSpeed)
+        if (Mathf.Abs(camera.orthographicSize - (roomHeight / 2.0f)) < cameraScaleSpeed)
         {
             camera.orthographicSize = roomHeight / 2.0f;
         }  
@@ -108,7 +112,7 @@ public class CameraControl : MonoBehaviour {
         }
 
 		// and now we're updating the camera position using what came of all the calculations above.
-		this.transform.position = Vector3.MoveTowards(transform.position, cameraPosition, 0.1f);
+		this.transform.position = Vector3.MoveTowards(transform.position, cameraPosition, cameraMoveSpeed);
 	}
 
 

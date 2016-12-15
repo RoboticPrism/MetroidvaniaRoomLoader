@@ -56,9 +56,8 @@ public class SamplePlayerMovement : MonoBehaviour {
             yield return null;
         }
 
-        // Turn off the camera limits for the transition
-        cc.DeactivateXLimits();
-        cc.DeactivateYLimits();
+        // Set the camera bounds to the new room
+        newRoom.SetLimits();
 
         // Set the position to move towards (Note that we use the player's z location)
         Vector3 goToPosition = new Vector3(door.GetDestinationDoor().GetMyDestination().position.x,
@@ -74,8 +73,7 @@ public class SamplePlayerMovement : MonoBehaviour {
             yield return null;
         }
 
-        // Set the new camera bounds and move the camera
-		newRoom.SetLimits ();
+        // Wait half a second for dramatic flair
         yield return new WaitForSeconds(0.5f);
 
         // Pull the blackout object off the camera
