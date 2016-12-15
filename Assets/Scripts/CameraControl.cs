@@ -15,7 +15,6 @@ public class CameraControl : MonoBehaviour {
 	// Activate your position limitations for the Y axis by turning this on.
 
 	[Header("Camera Movement Boundaries")]
-	public bool limitCameraMovement = true;
 	public bool limitCamXMovement = true;
 	public bool limitCamYMovement = true;
     public Vector2 roomSizeMin;
@@ -75,27 +74,37 @@ public class CameraControl : MonoBehaviour {
             roomHeight = roomWidth / aspect;
         }
 
-        // Set camera size
-        camera.orthographicSize = roomHeight/2.0f;
-
+        // Set camera size gradually
+        float scaleSpeed = 0.1f;
+        // If camera needs to be bigger, boost it up
+        if (camera.orthographicSize < roomHeight / 2.0f)
+        {
+            camera.orthographicSize += scaleSpeed;
+        }
+        // If camera needs to be smaller, scale it down
+        else if (camera.orthographicSize > roomHeight / 2.0f)
+        {
+            camera.orthographicSize -= scaleSpeed;
+        }
+        // If the camera is close enough to the right size, jump it there
+        if (Mathf.Abs(camera.orthographicSize - (roomHeight / 2.0f)) < scaleSpeed)
+        {
+            camera.orthographicSize = roomHeight / 2.0f;
+        }  
+        
         float cameraHeight = camera.orthographicSize * 2.0f;
         float cameraWidth = cameraHeight * camera.aspect;
 
         // Calculate the camera position in this room
-
-        Debug.Log(cameraWidth + " " + cameraHeight);
-
         Vector3 playerPosition = player.transform.position;
 		Vector3 cameraPosition = new Vector3 (playerPosition.x, playerPosition.y, transform.position.z);
 
 		// Here we clamp the desired position into the area declared in the limit variables.
-		if (limitCameraMovement) {
+		if (limitCamXMovement) {
             cameraPosition.x = Mathf.Clamp(cameraPosition.x, roomSizeMin.x + cameraWidth / 2.0f, roomSizeMax.x - cameraWidth / 2.0f);
+        }
+        if (limitCamYMovement) {
             cameraPosition.y = Mathf.Clamp(cameraPosition.y, roomSizeMin.y + cameraHeight / 2.0f, roomSizeMax.y - cameraHeight / 2.0f);
-		} else if (limitCamXMovement) {
-            cameraPosition.x = Mathf.Clamp(cameraPosition.x, roomSizeMax.x, roomSizeMin.x);
-        } else if (limitCamYMovement) {
-            cameraPosition.y = Mathf.Clamp(cameraPosition.y, roomSizeMax.y, roomSizeMin.y);
         }
 
 		// and now we're updating the camera position using what came of all the calculations above.
@@ -111,21 +120,17 @@ public class CameraControl : MonoBehaviour {
         roomSizeMin = min;
         roomSizeMax = max;
 
-		limitCameraMovement = true;
-		limitCamXMovement = true;
+	    limitCamXMovement = true;
 		limitCamYMovement = true;
 	}
 
-	// No longer use limits.
-	public void DeactivateLimits ()
-	{
-		limitCameraMovement = false;
-	}
-
+    // Turn off horizontal camera limits
 	public void DeactivateXLimits()
 	{
 		limitCamXMovement = false;
 	}
+
+    //Turn off vertical camera limits
 	public void DeactivateYLimits()
 	{
 		limitCamYMovement = false;

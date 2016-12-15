@@ -55,8 +55,11 @@ public class SamplePlayerMovement : MonoBehaviour {
             blackout.color = new Color(0.0f, 0.0f, 0.0f, blackout.color.a + 0.05f);
             yield return null;
         }
-        cc.DeactivateLimits();
+
+        // Turn off the camera limits for the transition
         cc.DeactivateXLimits();
+        cc.DeactivateYLimits();
+
         // Set the position to move towards (Note that we use the player's z location)
         Vector3 goToPosition = new Vector3(door.GetDestinationDoor().GetMyDestination().position.x,
                                            door.GetDestinationDoor().GetMyDestination().position.y,
@@ -70,6 +73,8 @@ public class SamplePlayerMovement : MonoBehaviour {
                                                                      speed/100.0f);
             yield return null;
         }
+
+        // Set the new camera bounds and move the camera
 		newRoom.SetLimits ();
         yield return new WaitForSeconds(0.5f);
 
