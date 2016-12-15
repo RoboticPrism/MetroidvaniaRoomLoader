@@ -26,6 +26,8 @@ public class RoomManager : MonoBehaviour {
 			allRooms.Add(r);
 			if (r.spawnRoom) {
 				SetCurrentRoom(r);
+                // Set the camera limits to the spawn room
+                r.SetLimits();
 			}
 		}
 		/*

@@ -20,17 +20,25 @@ public class Room : MonoBehaviour {
     public List<RoomObject> roomObjects;
 
 	// Variables for camera locking
-	public float minX;
-	public float maxX;
-	public float minY;
-	public float maxY;
-
+	public Vector2 roomSizeMin;
+    public Vector2 roomSizeMax;
 
 	// Use this for initialization
 	void Awake ()
     {
-		// Search this room's children for it's doors and objects
-		foreach (Transform child in GetComponentInChildren<Transform>())
+        // Calulcate the min and max of this room using the combined colliders
+        Collider2D[] colliders2D = GetComponentsInChildren<Collider2D>();
+        Bounds colBounds = new Bounds(transform.position, Vector3.zero);
+        foreach (Collider2D col in colliders2D)
+        {
+            colBounds.Encapsulate(col.bounds);
+        }
+
+        roomSizeMin = new Vector2(colBounds.min.x, colBounds.min.y);
+        roomSizeMax = new Vector2(colBounds.max.x, colBounds.max.y);
+
+        // Search this room's children for it's doors and objects
+        foreach (Transform child in GetComponentInChildren<Transform>())
         {
 			if (child.GetComponent<Door>() != null)
             {
@@ -109,7 +117,7 @@ public class Room : MonoBehaviour {
 	public void SetLimits() {
 		CameraControl cc = Object.FindObjectOfType<CameraControl> ();
 		if (cc) {
-			cc.SetNewLimits (minX, maxX, minY, maxY);
+			cc.SetNewLimits (roomSizeMin, roomSizeMax);
 		}
 	}
 
