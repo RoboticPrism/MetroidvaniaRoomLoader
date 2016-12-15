@@ -45,7 +45,11 @@ public class SamplePlayerMovement : MonoBehaviour {
         
         // Assign new current room
         RoomManager rm = FindObjectOfType<RoomManager>();
-        rm.SetCurrentRoom(door.GetDestinationDoor().GetMyRoom());
+		Room newRoom = door.GetDestinationDoor().GetMyRoom();
+		CameraControl cc = Object.FindObjectOfType<CameraControl> ();
+		cc.DeactivateLimits ();
+		cc.DeactivateXLimits ();
+		rm.SetCurrentRoom(newRoom);
 
         // Drop the blackout object over the camera
         while (blackout.color.a < 1.0f)
@@ -67,6 +71,7 @@ public class SamplePlayerMovement : MonoBehaviour {
                                                                      speed/100.0f);
             yield return null;
         }
+		newRoom.SetLimits ();
         
 
         // Pull the blackout object off the camera
@@ -75,7 +80,6 @@ public class SamplePlayerMovement : MonoBehaviour {
             blackout.color = new Color(0.0f, 0.0f, 0.0f, blackout.color.a - 0.01f);
             yield return null;
         }
-
         // Now that the old room is offscree we can clean it up
         rm.CleanUpRooms();
 

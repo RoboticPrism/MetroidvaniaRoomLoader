@@ -19,6 +19,13 @@ public class Room : MonoBehaviour {
     // Respawning objects in this room
     public List<RoomObject> roomObjects;
 
+	// Variables for camera locking
+	public float minX;
+	public float maxX;
+	public float minY;
+	public float maxY;
+
+
 	// Use this for initialization
 	void Awake ()
     {
@@ -98,5 +105,12 @@ public class Room : MonoBehaviour {
         }
         return return_list;
     }
+
+	public void SetLimits() {
+		CameraControl cc = Object.FindObjectOfType<CameraControl> ();
+		if (cc) {
+			cc.SetNewLimits (minX, maxX, minY, maxY);
+		}
+	}
 
 }
