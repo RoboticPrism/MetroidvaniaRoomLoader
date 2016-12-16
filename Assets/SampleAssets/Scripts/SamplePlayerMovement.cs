@@ -46,9 +46,7 @@ public class SamplePlayerMovement : MonoBehaviour {
         // Assign new current room
         RoomManager rm = FindObjectOfType<RoomManager>();
 		Room newRoom = door.GetDestinationDoor().GetMyRoom();
-		CameraControl cc = Object.FindObjectOfType<CameraControl> ();
-		cc.DeactivateLimits ();
-		cc.DeactivateXLimits ();
+		CameraControl cc = FindObjectOfType<CameraControl> ();
 		rm.SetCurrentRoom(newRoom);
 
         // Drop the blackout object over the camera
@@ -57,6 +55,9 @@ public class SamplePlayerMovement : MonoBehaviour {
             blackout.color = new Color(0.0f, 0.0f, 0.0f, blackout.color.a + 0.05f);
             yield return null;
         }
+
+        // Set the camera bounds to the new room
+        newRoom.SetLimits();
 
         // Set the position to move towards (Note that we use the player's z location)
         Vector3 goToPosition = new Vector3(door.GetDestinationDoor().GetMyDestination().position.x,
@@ -71,8 +72,9 @@ public class SamplePlayerMovement : MonoBehaviour {
                                                                      speed/100.0f);
             yield return null;
         }
-		newRoom.SetLimits ();
-        
+
+        // Wait half a second for dramatic flair
+        yield return new WaitForSeconds(0.5f);
 
         // Pull the blackout object off the camera
         while (blackout.color.a > 0.0f)
